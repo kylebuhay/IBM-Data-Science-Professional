@@ -53,33 +53,212 @@ Exercise 3: Creating a Stored Procedure
 1. Write the structure of a query to create or replace a stored procedure called UPDATE_LEADERS_SCORE that takes a in_School_ID parameter as an integer and a in_Leader_Score parameter as an integer.
 
 - SCRIPT:
-CREATE OR REPLACE PROCEDURE
-UPDATE_LEADERS_SCORE (IN in School_ID INTEGER, IN in Leader_Score INTEGER)
-LANGUAGE SOL
+CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+    in_School_ID INT,
+    in_Leader_Score INT
+)
 BEGIN
-END
+    -- Body of Procedure Here
+END;
+
 
 - OUTPUT:
-e3q1-sql query
+e3q1-script snippet
 
 2.Inside your stored procedure, write a SQL statement to update the Leaders_Score field in the CHICAGO_PUBLIC_SCHOOLS table for the school identified by in_School_ID to the value in the in_Leader_Score parameter.
 
 - SCRIPT:
-CREATE OR REPLACE PROCEDURE
-UPDATE_LEADERS_SCORE (IN in_School_ID INTEGER, IN in_Leader_Score INTEGER)
-LANGUAGE SOL
-BEGIN
-UPDATE CHICAGO PUBLIC SCHOOLS
-SET "Leaders Score" = in Leader Score
-WHERE "School_ID" = in_School_ID;
-END
+UPDATE chicago_public_schools
+SET Leaders_Score = in_Leader_Score
+WHERE School_ID = in_School_ID;
 
 - OUTPUT:
-e3q2-sql query
+e3q2-script snippet
 
 3. Inside your stored procedure, write a SQL IF statement to update the Leaders_Icon field in the CHICAGO_PUBLIC_SCHOOLS table for the school identified by in_School_ID using the following information.
 
 - SCRIPT:
-
+IF in_Leader_Score BETWEEN 80 AND 99 THEN
+    UPDATE chicago_public_schools
+    SET Leaders_Icon = 'Very strong'
+    WHERE School_ID = in_School_ID;
+ELSEIF in_Leader_Score BETWEEN 60 AND 79 THEN
+    UPDATE chicago_public_schools
+    SET Leaders_Icon = 'Strong'
+    WHERE School_ID = in_School_ID;
+ELSEIF in_Leader_Score BETWEEN 40 AND 59 THEN
+    UPDATE chicago_public_schools
+    SET Leaders_Icon = 'Average'
+    WHERE School_ID = in_School_ID;
+ELSEIF in_Leader_Score BETWEEN 20 AND 39 THEN
+    UPDATE chicago_public_schools
+    SET Leaders_Icon = 'Weak'
+    WHERE School_ID = in_School_ID;
+ELSE
+    UPDATE chicago_public_schools
+    SET Leaders_Icon = 'Very weak'
+    WHERE School_ID = in_School_ID;
+END IF;
 
 - OUTPUT:
+e3q3-if statement
+
+4. Run your code to create the stored procedure. Write a query to call the stored procedure, passing a valid school ID and a leader score of 50, to check that the procedure works as expected.
+
+- SCRIPT:
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS UPDATE_LEADERS_SCORE$$
+
+CREATE PROCEDURE UPDATE_LEADERS_SCORE (
+    in_School_ID INT,
+    in_Leader_Score INT
+)
+BEGIN
+    -- Update Leaders_Score
+    UPDATE chicago_public_schools
+    SET Leaders_Score = in_Leader_Score
+    WHERE School_ID = in_School_ID;
+
+    -- Update Leaders_Icon based on the score
+    IF in_Leader_Score BETWEEN 80 AND 99 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 60 AND 79 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 40 AND 59 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Average'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 20 AND 39 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Weak'
+        WHERE School_ID = in_School_ID;
+    ELSE
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very weak'
+        WHERE School_ID = in_School_ID;
+    END IF;
+END$$
+
+DELIMITER ;
+
+CALL UPDATE_LEADERS_SCORE(1, 50);
+
+- OUTPUT:
+e3q4-procedure
+
++-----------+
+
+Exercise 4: Using Transactions
+
+1. Update your stored procedure definition. Add a generic ELSE clause to the IF statement that rolls back the current work if the score did not fit any of the preceding categories.
+
+- SCRIPT:
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+    in_School_ID INT,
+    in_Leader_Score INT
+)
+BEGIN
+    DECLARE exit HANDLER FOR SQLEXCEPTION
+        ROLLBACK;
+
+    START TRANSACTION;
+
+    -- Update Leaders_Score
+    UPDATE chicago_public_schools
+    SET Leaders_Score = in_Leader_Score
+    WHERE School_ID = in_School_ID;
+
+    -- Update Leaders_Icon based on the score
+    IF in_Leader_Score BETWEEN 80 AND 99 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 60 AND 79 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 40 AND 59 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Average'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 20 AND 39 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Weak'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 0 AND 19 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very weak'
+        WHERE School_ID = in_School_ID;
+    ELSE
+        ROLLBACK;
+        LEAVE;
+    END IF;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+- OUTPUT:
+e4q1-else clause
+
+2. Update your stored procedure definition again. Add a statement to commit the current unit of work at the end of the procedure.
+
+- SCRIPT:
+DELIMITER $$
+
+CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+    in_School_ID INT,
+    in_Leader_Score INT
+)
+BEGIN
+    DECLARE exit HANDLER FOR SQLEXCEPTION
+        ROLLBACK;
+
+    START TRANSACTION;
+
+    -- Update Leaders_Score
+    UPDATE chicago_public_schools
+    SET Leaders_Score = in_Leader_Score
+    WHERE School_ID = in_School_ID;
+
+    -- Update Leaders_Icon based on the score
+    IF in_Leader_Score BETWEEN 80 AND 99 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 60 AND 79 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Strong'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 40 AND 59 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Average'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 20 AND 39 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Weak'
+        WHERE School_ID = in_School_ID;
+    ELSEIF in_Leader_Score BETWEEN 0 AND 19 THEN
+        UPDATE chicago_public_schools
+        SET Leaders_Icon = 'Very weak'
+        WHERE School_ID = in_School_ID;
+    ELSE
+        ROLLBACK;
+        LEAVE;
+    END IF;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+- OUTPUT:
+e4q2-commit
