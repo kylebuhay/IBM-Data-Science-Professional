@@ -4,7 +4,7 @@ This repository contains my coursework and projects from the IBM Data Science Pr
 
 ## Program Overview
 
-The IBM Data Science Professional Certificate consists of 10 courses:
+The IBM Data Science Professional Certificate consists of 12 courses:
 1. What is Data Science?
 2. Tools for Data Science
 3. Data Science Methodology
@@ -15,6 +15,8 @@ The IBM Data Science Professional Certificate consists of 10 courses:
 8. Data Visualization with Python
 9. Machine Learning with Python
 10. Applied Data Science Capstone
+11. Generative AI: Elevate Your Data Science Career
+12. Data Scientist Career Guide and Interview Preparation
 
 Each course is designed to build on the previous one to create a comprehensive foundation in data science.
 
