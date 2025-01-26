@@ -1,4 +1,4 @@
-# ⭐ IBM Data Science Progessional Certificate
+# ⭐ IBM Data Science Professional Certificate
 
 This repository contains my coursework and projects from the IBM Data Science Professional Certificate program offered through Coursera. The program is designed to equip learners with the latest job-ready tools and skills, including open-source tools and libraries, Python, databases, SQL, data visualization, data analysis, statistical analysis, predictive modeling, and machine learning algorithms.
 
